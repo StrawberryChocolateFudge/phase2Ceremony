@@ -1,5 +1,16 @@
 const connectionList = [];
 const MAXCONNECTIONS = 25;
+const processing = {
+    currently: ""
+}
+
+function getProcessingCurrently() {
+    return processing.currently;
+}
+
+function setProcessingCurrently(to) {
+    processing.currently = to;
+}
 
 function addConnecton(socketId) {
     // Do not allow more than 25 connections
@@ -24,4 +35,8 @@ function getConnectionList() {
     return connectionList;
 }
 
-module.exports = { addConnecton, removeConnection, myPosition, getConnectionList }
+function getFirst() {
+    return connectionList[0];
+}
+
+module.exports = { addConnecton, removeConnection, myPosition, getConnectionList, getFirst, getProcessingCurrently, setProcessingCurrently }
