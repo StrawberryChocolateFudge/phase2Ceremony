@@ -2,10 +2,11 @@
   "name": "frontend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "main": "index.ts",
   "scripts": {
     "dev": "parcel index.html",
-    "build": "parcel build index.html && sh copyToServer.sh"
+    "build": "parcel build  index.html --target browser --no-minify && sh copyToServer.sh"
   },
   "keywords": [],
   "author": "StrawberryChocolateFudge",
