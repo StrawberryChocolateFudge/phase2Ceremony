@@ -11,20 +11,20 @@ export function connectToSocket(onSuccess, onError, routeMessages) {
         onError("Unable to connect to websocket!")
         socket.disconnect();
     }
-    //TODO: Unable to connect error
 
     socket.on("connect", () => {
         onSuccess("Successfully Connected to the socket. You have been added to a queue!")
         console.log(socket.id);
     });
 
-    socket.onAny((jsonString) => {
+    socket.onAny(async (jsonString) => {
         const msg = JSON.parse(jsonString);
-        routeMessages(msg);
+        await routeMessages(msg);
     })
 
     socket.on("disconnect", () => {
         socket.disconnect();
+        onError("Connection disconnected!")
     })
 
     socket.open();
