@@ -1,8 +1,7 @@
 import { connectToSocket } from "./src/websockets";
+import { contributeWithMemfile } from "./src/contribute";
 
 const nameInput = document.getElementById("nameInput") as HTMLInputElement;
-
-const entropyInput = document.getElementById("entropyInput") as HTMLInputElement;
 
 const enterCeremony = document.getElementById("enterCeremony") as HTMLButtonElement;
 
@@ -12,11 +11,6 @@ enterCeremony.onclick = async function () {
     hideMessage();
     if (nameInput.value.length <= 1) {
         showErrorMessage("You need to enter a name! At least 2 characters!")
-        return;
-    }
-
-    if (entropyInput.value.length <= 10) {
-        showErrorMessage("Add entropy. At least 10 characters!");
         return;
     }
 
@@ -31,10 +25,14 @@ enterCeremony.onclick = async function () {
 
     const MessageRoutes = {
         position: "position",
-        closeConnection: "closeConnection"
+        closeConnection: "closeConnection",
+        startContribution: "startContribution"
+
     }
+
     let disconnectFN;
-    function routeMessages(route) {
+
+    async function routeMessages(route) {
         switch (route.type) {
             case MessageRoutes.position:
                 showSuccessMessage(`You are in a queue. You are ${route.msg.pos} out of ${route.msg.length}. The ceremony will automaticly proceed when it's your turn!`)
@@ -42,7 +40,18 @@ enterCeremony.onclick = async function () {
             case MessageRoutes.closeConnection:
                 disconnectFN();
                 enterCeremony.disabled = false;
+                nameInput.disabled = false;
                 showErrorMessage(`Connection closed: ${route.msg.reason}`)
+                break;
+            case MessageRoutes.startContribution:
+                showSuccessMessage("Starting contribution!");
+                console.log("filename: ", route.msg.filename);
+                const res = await contributeWithMemfile(route.msg.filename, nameInput.value).catch(err => {
+                    console.log(err.message)
+                    // showErrorMessage("Contribution Failed. Reload the Page and Try Again!");
+                    // disconnectFN();
+                });
+                console.log(res);
                 break;
             default:
                 break;
@@ -52,6 +61,7 @@ enterCeremony.onclick = async function () {
     disconnectFN = connectToSocket(onSuccess, onError, routeMessages);
 
     enterCeremony.disabled = true;
+    nameInput.disabled = true;
 }
 
 
