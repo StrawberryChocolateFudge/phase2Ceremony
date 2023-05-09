@@ -96,21 +96,18 @@ Hosted on an Ubuntu or Debian VPS
 
 `pm2 startup systemd`
 
-Clone this project from github
 
-Install the dependencies,build the front end and run the server with pm2 from the snarky user.
+`su snarky`
+
+Clone this project from github 
+
+Install the dependencies, build the front end and run the server with pm2 from the snarky user.
 
 copy the nginxconfig sites-available
 `cp /home/snarky/phase2Ceremony/nginxconfig /etc/nginx/sites-available/default `
 
 then reload nginx
 `sudo systemctl reload nginx`
-## Don't forget to copy 1 .ptau and 1 .r1cs file to /otherfiles and at least 1 .zkey to /zkeys
-Everything in the /zkeys directory is public!! and only store .zkey files there otherwise there will be errors!!
-
-A csv log file will be created in the /otherfiles directory! It will be also served publicly at `/log`
-
-All the files copied to /public are also public! Thef ront end build will automaticly copy the dist directory here!
 
 ## Run the server
 
@@ -121,6 +118,19 @@ All the files copied to /public are also public! Thef ront end build will automa
 PM2 should run only a single instance of the server because it uses the memory for queueing websocket connections!
 It could be scaled to cluster mode if a database layer is added with a locking mechanism to manage the queue, but for the current use-case that is not required.
 We don't need too many participants for a phase 2 ceremony so a single thread will do.
+
+## Files
+
+Copy 1 .ptau and 1 .r1cs file to /otherfiles, if there are duplicate files with the same extensions the server will error on startup.
+
+Copy at least 1 .zkey to /zkeys, this is the directory where the other keys will be saved to.
+
+Everything in the /zkeys directory is public!! Only store .zkey files there otherwise there will be errors!!
+
+A csv log file will be created in the /otherfiles directory! It will be also served publicly at `/log`
+
+All the files copied to /public are also public! The front end build will automaticly copy the dist directory here!
+
 
 ## Verify your participation
 
