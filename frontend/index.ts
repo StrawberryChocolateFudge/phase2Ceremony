@@ -15,8 +15,13 @@ const enterCeremony = document.getElementById("enterCeremony") as HTMLButtonElem
 
 const messageDisplay = document.getElementById("messageDisplay") as HTMLDivElement;
 
-export function askEntropy() {
+function askEntropy() {
     return window.prompt("Enter a random text. (Entropy): ", "");
+}
+
+function hashName(name) {
+    const { createHash } = cryptoBrowserify;
+    return createHash('sha256').update(name).digest('hex');
 }
 
 enterCeremony.onclick = async function () {
@@ -31,6 +36,8 @@ enterCeremony.onclick = async function () {
         showErrorMessage("You need to enter Entropy!")
         return;
     }
+
+    const nameHash = hashName(nameInput.value);
 
     if (entropy.length < 3) {
         showErrorMessage("Entropy too short");
@@ -67,7 +74,7 @@ enterCeremony.onclick = async function () {
                 break;
             case MessageRoutes.startContribution:
                 showSuccessMessage("Starting contribution!");
-                const contribution = await contributeWithMemfile(route.msg.filename, nameInput.value, entropy).catch(err => {
+                const contribution = await contributeWithMemfile(route.msg.filename, nameHash, entropy).catch(err => {
                     showErrorMessage("Contribution Failed. Reload the Page and Try Again!");
                     socketFns.disconnect();
                 });
@@ -76,11 +83,11 @@ enterCeremony.onclick = async function () {
                     const { contributionHash, newFile } = contribution;
                     showSuccessMessage("Uploading contribution....Verifying...");
 
-                        socketFns.uploadFile(
-                            route.msg.filename,
-                            nameInput.value,
-                            newFile.data,
-                            contributionHash);
+                    socketFns.uploadFile(
+                        route.msg.filename,
+                        nameHash,
+                        newFile.data,
+                        contributionHash);
                 }
 
                 break;
