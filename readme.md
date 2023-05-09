@@ -121,4 +121,6 @@ PM2 should run only a single instance of the server because it uses the memory f
 It could be scaled to cluster mode if a database layer is added with a locking mechanism to manage the queue, but for the current use-case that is not required.
 We don't need too many participants for a phase 2 ceremony so a single thread will do.
 
+## Verify your participation
 
+To verify which one is your contribution you can access the logs at `/log` . You need the sha256 hash of the name you entered and if you can find it in the logs that is your contribution!
