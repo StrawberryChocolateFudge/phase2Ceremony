@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node --trace-warnings ./bin/www"
   },
   "keywords": [],
   "author": "StrawberryChocolateFudge",
@@ -19,6 +19,7 @@
     "helmet": "^6.0.0",
     "morgan": "~1.9.1",
     "node-fetch-commonjs": "^3.2.4",
+    "snarkjs": "^0.6.11",
     "socket.io": "^4.6.1",
     "ws": "^8.13.0"
   }
