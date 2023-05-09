@@ -3,8 +3,11 @@ import { io } from "socket.io-client";
 
 
 export function connectToSocket(onSuccess, onError, routeMessages) {
-
     let socket;
+    let contributionEndedDisconnect = false;
+    let contributionEndedDisconnectMessage = "";
+    let contributionEndedInError = false;
+
     try {
         socket = io({ autoConnect: false })
     } catch (err) {
@@ -24,11 +27,36 @@ export function connectToSocket(onSuccess, onError, routeMessages) {
 
     socket.on("disconnect", () => {
         socket.disconnect();
-        onError("Connection disconnected!")
+        if (contributionEndedDisconnect) {
+            if (contributionEndedInError) {
+                onError(contributionEndedDisconnectMessage)
+            } else {
+                onSuccess(contributionEndedDisconnectMessage)
+            }
+        } else {
+            onError("Connection disconnected!")
+        }
     })
 
     socket.open();
 
-    return () => socket.disconnect();
+
+
+    return {
+        disconnect: () => socket.disconnect(),
+        uploadFile: (oldFileName, name, data, contributionHash) => {
+            socket.emit("upload", { oldFileName, name, data: data.buffer, contributionHash }, (status) => {
+                if (status.code === 0) {
+                    contributionEndedDisconnectMessage = "Successful contribution. Thank you for supporting decentralization!";
+                } else {
+                    contributionEndedDisconnectMessage = status.message;
+                    contributionEndedInError = true;
+                }
+
+                contributionEndedDisconnect = true;
+                socket.disconnect();
+            })
+        }
+    };
 }
 
