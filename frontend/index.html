@@ -11,21 +11,47 @@
 
 <body>
     <section class="column-center">
-        <div class="column-center width400px marginAuto textAlign-center">
-            <h3>Contribute to a Phase 2 Ceremony</h3>
-            <h5>Fill out the form, add a name. The name might be displayed later so use one that you don't mind publicly
-                sharing!</h5>
-            <div class="spacer"></div>
+        <div class="shadow marginAuto width700px">
+            <div class="padding50px column-center width400px marginAuto ">
+                <h3 class="textAlign-center">Contribute to a Phase 2 Ceremony</h3>
+                <h4 class="textAlign-center">Used for a Groth16 zk-SNARK proving system.</h4>
+                <img src="./girl.png" width="200px" />
+                <h5>Fill out the form, add a name. The name will be added to the logs so use one that you don't mind
+                    publicly
+                    sharing! You will be prompted to enter some entropy then wait for your turn! </h5>
+                <div class="spacer"></div>
 
-            <label for="nameInput">Enter a Name</label>
-            <input id="nameInput" placeholder="name" type="text" />
-            <div class="spacer"></div>
+                <label for="nameInput">Enter a Name</label>
+                <input class="type-1" id="nameInput" placeholder="name" type="text" />
+                <div class="spacer"></div>
 
-            <div class="spacer"></div>
-            <div id="messageDisplay"></div>
-            <button id="enterCeremony">Enter ceremony</button>
+                <div class="spacer"></div>
+                <div class="textAlign-center" id="messageDisplay"></div>
+                <button class="button-27" role="button" id="enterCeremony">Enter ceremony</button>
+            </div>
+            <br />
+        </div>
+        <br />
+        <div class="shadow marginAuto width700px">
+
+            <div class="padding50px column-center width400px marginAuto ">
+
+                <h3 class="textAlign-center">Terms</h3>
+                <h4>We keep logs</h4>
+                <a href="/log">You can download the contribution log here!</a>
+                <h4>We don't collect personal information</h4>
+                <p>Servers keep logs of connections but we don't knowingly process them, other than the contribution
+                    log. The contribution log is public so by contributing you accept our terms that the details you
+                    enter may be processed and shared.</p>
+                <h4>No Cookies!!</h4>
+                <h4>MIT License</h4>
+                <a href="https://github.com/StrawberryChocolateFudge/phase2Ceremony">Source code</a>
+                <h4>If you want me to host your phase 2 ceremony, send an email to: info.zkptech@pm.me</h4>
+
+            </div>
         </div>
     </section>
 </body>
 <script src="./index.ts"></script>
+
 </html>
