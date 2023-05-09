@@ -4,7 +4,7 @@
 This project contains a front end and a server to conduct a phase 2 ceremony with random strangers who don't know how to code.
 The application is non-opinionated so it can be easily reused for many projects, just copy the files in the directories.
 
-The contribution queue allows 25 simlutanious connections. Up to 25 contributors can connect at once. The contribution is synchronous so they need to wait for their turn. A turn takes around 20 seconds with a remote VPS. If a connection lasts for longer than 60 seconds the contribution is aborted and the queue continues from the next participant. This is to mitigate DOS where an attacker would block the queue.
+The contribution queue allows 25 connections. Up to 25 contributors can connect at once. The contribution is synchronous so they need to wait for their turn. A turn takes around 20 seconds with a remote VPS. If a connection lasts for longer than 60 seconds the contribution is aborted and the queue continues from the next participant. This is to mitigate DOS where an attacker would block the queue.
 
 ## How to use
 
