@@ -67,7 +67,9 @@ The when saving, the ids will be padded to be 4 digits long.
 Run the application using PM2 on a VPS and install NGINX
 
 The nginxconfig is configured to use snarkyceremonies.com domain. Update it to your own.
-Hosted on an Ubuntu or Debian VPS
+Hosted on an Ubuntu or Debian VPS. 
+
+You can also choose to self host it at home on a raspberry pi. It should work but the config will be a bit different!
 
 ## Server setup
 
