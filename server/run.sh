@@ -1,1 +1,1 @@
-NODE_ENV=production pm2 start server/bin/www
+NODE_ENV=production pm2 start ./bin/www
