@@ -6,10 +6,8 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors')
 
-const helmet = require("helmet");
 
 const app = express();
-app.use(helmet())
 app.use(cors());
 app.options('*', cors());
 app.use(logger('dev'));
@@ -17,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use("/files",express.static(path.join(__dirname, "files")));
-
+app.use("/zkeys", express.static(path.join(__dirname, "zkeys")));
+app.use("/log",express.static(path.join(__dirname,"otherfiles"),{index: "log.csv"}))
 
 module.exports = app;
