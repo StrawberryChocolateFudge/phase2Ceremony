@@ -54,8 +54,60 @@ So the scheme is the following {name}_{id}.zkey
 
 The name can be anything, the name of the circuit, the id is the number that is incremented so the first contribution is 0001 and second 0002 etc.
 
+## Deployment
 Run the application using PM2 on a VPS and install NGINX
 
-TODO:...
+The nginxconfig is configured to use snarkyceremonies.com domain. Update it to your own.
+Hosted on an Ubuntu or Debian VPS
+
+## Server setup
+
+`sudo apt update`
+
+`sudo apt upgrade`
+
+`adduser snarky`
+
+`usermod -aG sudo snarky`
+
+`sudo apt install nginx`
+
+## Snap is needed due to certbot install
+`sudo apt install snapd`
+
+`sudo snap install --classic certbot`
+
+`sudo ln -s /snap/bin/certbot /usr/bin/certbot`
+
+`sudo certbot --nginx`
+
+## nodejs install
+
+`curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -`
+
+`sudo apt-get install -y nodejs`
+
+`npm install -g pm2`
+
+`pm2 startup systemd`
+
+Clone this project from github
+
+Install the dependencies and run the server with pm2 from the snarky user.
+
+`npm install`
+
+## Don't forget to copy 1 .ptau and 1 .r1cs file to /otherfiles and at least 1 .zkey to /zkeys
+Everything in the /zkeys directory is public!! only store .zkey files there otherwise there will be errors!!
+
+The log file will be created in the /otherfiles directory! It will be also served publicly.
+
+All the files copied to /public are also public!
+
+## Run the server
+
+`chmod a+x run.sh` 
+
+`./run.sh`
 
 
