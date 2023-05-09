@@ -1,5 +1,13 @@
 import { connectToSocket } from "./src/websockets";
 import { contributeWithMemfile } from "./src/contribute";
+import * as cryptoBrowserify from "crypto-browserify";
+import buffer from "buffer/";
+
+//@ts-ignore
+window.cryptoBrowserify = cryptoBrowserify;
+
+//@ts-ignore
+window.Buffer = buffer.Buffer;
 
 const nameInput = document.getElementById("nameInput") as HTMLInputElement;
 
@@ -7,10 +15,25 @@ const enterCeremony = document.getElementById("enterCeremony") as HTMLButtonElem
 
 const messageDisplay = document.getElementById("messageDisplay") as HTMLDivElement;
 
+export function askEntropy() {
+    return window.prompt("Enter a random text. (Entropy): ", "");
+}
+
 enterCeremony.onclick = async function () {
     hideMessage();
     if (nameInput.value.length <= 1) {
         showErrorMessage("You need to enter a name! At least 2 characters!")
+        return;
+    }
+    const entropy = await askEntropy();
+
+    if (!entropy) {
+        showErrorMessage("You need to enter Entropy!")
+        return;
+    }
+
+    if (entropy.length < 3) {
+        showErrorMessage("Entropy too short");
         return;
     }
 
@@ -27,10 +50,9 @@ enterCeremony.onclick = async function () {
         position: "position",
         closeConnection: "closeConnection",
         startContribution: "startContribution"
-
     }
 
-    let disconnectFN;
+    let socketFns;
 
     async function routeMessages(route) {
         switch (route.type) {
@@ -38,27 +60,36 @@ enterCeremony.onclick = async function () {
                 showSuccessMessage(`You are in a queue. You are ${route.msg.pos} out of ${route.msg.length}. The ceremony will automaticly proceed when it's your turn!`)
                 break;
             case MessageRoutes.closeConnection:
-                disconnectFN();
+                socketFns.disconnect();
                 enterCeremony.disabled = false;
                 nameInput.disabled = false;
                 showErrorMessage(`Connection closed: ${route.msg.reason}`)
                 break;
             case MessageRoutes.startContribution:
                 showSuccessMessage("Starting contribution!");
-                console.log("filename: ", route.msg.filename);
-                const res = await contributeWithMemfile(route.msg.filename, nameInput.value).catch(err => {
-                    console.log(err.message)
-                    // showErrorMessage("Contribution Failed. Reload the Page and Try Again!");
-                    // disconnectFN();
+                const contribution = await contributeWithMemfile(route.msg.filename, nameInput.value, entropy).catch(err => {
+                    showErrorMessage("Contribution Failed. Reload the Page and Try Again!");
+                    socketFns.disconnect();
                 });
-                console.log(res);
+
+                if (contribution !== undefined) {
+                    const { contributionHash, newFile } = contribution;
+                    showSuccessMessage("Uploading contribution....Verifying...");
+
+                        socketFns.uploadFile(
+                            route.msg.filename,
+                            nameInput.value,
+                            newFile.data,
+                            contributionHash);
+                }
+
                 break;
             default:
                 break;
         }
     }
 
-    disconnectFN = connectToSocket(onSuccess, onError, routeMessages);
+    socketFns = connectToSocket(onSuccess, onError, routeMessages);
 
     enterCeremony.disabled = true;
     nameInput.disabled = true;
