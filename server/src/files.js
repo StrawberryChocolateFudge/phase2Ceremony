@@ -1,9 +1,13 @@
 
 const fs = require("fs");
+const { verify } = require("./verify");
+
+const ZKEYSDIR = "./zkeys"
+const OTHERFILESDIR = "./otherfiles"
 
 function getLatest(onSuccess) {
     let fileNameIdArray = [];
-    fs.readdir("./files", (err, files) => {
+    fs.readdir(ZKEYSDIR, (err, files) => {
         files.forEach(file => {
             const getId = parseFileName(file);
             fileNameIdArray.push(getId);
@@ -30,23 +34,213 @@ function findLatestFile(array, onSuccess) {
 
 
 function parseFileName(fileName) {
-    const filenameRegex = /withdraw_(?<id>[\d.]+).zkey/g;
+    const filenameRegex = /(?<name>\w+)_(?<id>[\d.]+).zkey/g;
     const match = filenameRegex.exec(fileName);
     if (!match) {
         throw new Error("Invalid FileName");
     }
 
-    return { id: match.groups.id, fileName }
+    return { id: match.groups.id, fileName, name: match.groups.name }
 }
 
-// TODO : pad file name so it's at least 4 digits long, use zeros if it's shorter
+function createNewFileName({ id, name }) {
+    const incrementId = parseInt(id) + 1;
+    const idString = incrementId.toString();
+    // Pad the id to be 4 digits
+    let zeroes = "";
+    for (let i = idString.length; i < 4; i++) {
+        zeroes += "0";
+    }
+    const paddedId = zeroes + idString;
+    const newFileName = `${name}_${paddedId}.zkey`;
+
+    return newFileName;
+
+}
+
+
 // save the file to the files directory
-function writeFile() {
+async function writeFile(oldFileName, data, callback, contributorName, contributionHash) {
+    // Verify the file here before I attempt to write it!
+    const { valid } = await verify(data, detectFile);
+    if (!valid) {
+        callback({ message: "Invalid Contribution!", code: 1 });
+        return;
+    }
+    // First I do a check and get the latest
+    const parsed = parseFileName(oldFileName);
+    const newFileName = createNewFileName(parsed);
+
+    getLatest((filename) => {
+        if (oldFileName !== filename) {
+            callback({ message: "zkey ordering failed", code: 1 })
+            return;
+        }
+        const filePath = `${ZKEYSDIR}/${newFileName}`
+
+        fs.open(filePath, "w", (err, fd) => {
+            console.log("new file descriptor: ", fd)
+            // File should be missing
+            fs.writeFile(filePath, data, (err) => {
+                if (err) {
+                    callback({ message: "saving the file failed!", code: 1 })
+                    closeFd(fd);
+                } else {
+                    // Log the file writing
+                    writeLog("Contribution", contributorName, contributionHash, newFileName)
+                    closeFd(fd)
+                    callback({ message: "success", code: 0 })
+                }
+            })
+        })
+
+
+
+
+    })
+}
+function writeLog(type, contributorName, contributionHash, fileName) {
+    const path = `${OTHERFILESDIR}/log.csv`;
+    appendLogLine(
+        path,
+        type,
+        contributorName,
+        contributionHash,
+        fileName);
+}
+
+function appendLogLine(path, type, contributorName, contributionHash, fileName) {
+    fs.open(path, 'a', (err, fd) => {
+        console.log("log file descriptor:  ", fd)
+
+        if (err) {
+            console.error("Log file missing");
+            closeFd(fd);
+            // If logging failed, still let it gracefully continue
+            return;
+        };
+        fs.appendFile(fd, `${type},${contributorName},${contributionHash},${fileName}\n`, "utf-8", (err) => {
+            // If logging failed, still let it gracefully continue
+            if (err) {
+                console.error(err);
+            }
+            closeFd(fd)
+        });
+    });
+
+
+
 
 }
 
-function writeLog() {
-    // Write to a log file the name,contribution hash and the fileName
+function createLogIfNotExists() {
+    const path = `${OTHERFILESDIR}/log.csv`;
+    const csvFirstLine = `type,name,contributionHash,fileName\n`
+    fs.open(path, 'wx', (err, fd) => {
+        if (err) {
+            if (err.code === 'EEXIST') {
+                console.error('The log file already exists');
+                return;
+            }
+
+            throw err;
+        }
+
+        fs.writeFile(path, csvFirstLine, "utf-8", (err) => {
+            if (err) {
+                console.error("Cannot create log file")
+            } else {
+                console.log("Log file Created!");
+            }
+
+            closeFd(fd);
+
+        })
+    });
 }
 
-module.exports = { getLatest };
+function detectFile(extension, getResult) {
+    // use this function to detect if the required files exist
+    // and get their name
+    if (extension === "ptau") {
+        fs.readdir(OTHERFILESDIR, (err, files) => {
+            if (err) {
+                throw err;
+            }
+
+            let ptauFiles = [];
+
+            files.forEach(file => {
+                if (file.includes(".ptau")) {
+                    ptauFiles.push(file);
+                }
+            })
+
+            if (ptauFiles.length === 0) {
+                throw new Error("Unable to find .ptau files!");
+            }
+
+            if (ptauFiles.length > 1) {
+                throw new Error("Found more than 1 .ptau files!");
+            }
+            getResult(`${OTHERFILESDIR}/${ptauFiles[0]}`);
+        })
+
+    } else if (extension === "r1cs") {
+        fs.readdir(OTHERFILESDIR, (err, files) => {
+            if (err) {
+                throw err;
+            }
+
+            let r1csFiles = [];
+
+            files.forEach(file => {
+                if (file.includes(".r1cs")) {
+                    r1csFiles.push(file)
+                }
+            })
+
+            if (r1csFiles.length === 0) {
+                throw new Error("Unable to find .r1cs files!")
+            }
+
+            if (r1csFiles.length > 1) {
+                throw new Error("Found more than 1 .r1cs file!");
+            }
+            getResult(`${OTHERFILESDIR}/${r1csFiles[0]}`);
+        })
+
+
+    } else if (extension === "zkey") {
+        fs.readdir(ZKEYSDIR, (err, files) => {
+            if (err) {
+                throw err;
+            }
+
+            let zkeyFiles = [];
+
+            files.forEach(file => {
+                if (file.includes(".zkey")) {
+                    zkeyFiles.push(file);
+                }
+            });
+
+            if (zkeyFiles.length === 0) {
+                throw new Error("Unable to find a .zkey file! You need to put at least 1 in a ./zkeys directory ")
+            }
+
+            getResult(zkeyFiles[0]);
+        })
+    }
+}
+/*
+Cleanup. Close the file descriptor
+*/
+function closeFd(fd) {
+    fs.close(fd, (err) => {
+        if (err) throw err;
+    });
+}
+
+
+module.exports = { getLatest, writeFile, writeLog, detectFile, createLogIfNotExists };
