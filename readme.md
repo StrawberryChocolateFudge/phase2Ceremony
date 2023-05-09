@@ -139,3 +139,9 @@ All the files copied to /public are also public! The front end build will automa
 ## Verify your participation
 
 To verify which one is your contribution you can access the logs at `/log` . You need the sha256 hash of the name you entered and if you can find it in the logs that is your contribution!
+
+## How to customize
+
+Edit the index.html file to update the website. No frameworks are used, so it is pretty straight forward.
+
+You don't need to alter the server, just use the correct ptau,r1cs and zkey files and it will work.
