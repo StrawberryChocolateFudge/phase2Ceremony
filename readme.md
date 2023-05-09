@@ -6,6 +6,10 @@ The application is non-opinionated so it can be easily reused for many projects,
 
 The contribution queue allows 25 connections. Up to 25 contributors can connect at once. The contribution is synchronous so they need to wait for their turn. A turn takes around 20 seconds with a remote VPS. If a connection lasts for longer than 60 seconds the contribution is aborted and the queue continues from the next participant. This is to mitigate DOS where an attacker would block the queue.
 
+### Try it
+
+[Snarky Ceremonies](https://snarkyceremonies.com)
+
 ## How to use
 
 Build the front end first.
