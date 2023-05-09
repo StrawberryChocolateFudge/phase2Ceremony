@@ -1,8 +1,8 @@
-# Phase 2 Ceremony in the Browser
+# Unopinionated Phase 2 Ceremonies in the Browser
 
 
 This project contains a front end and a server to conduct a phase 2 ceremony with random strangers who don't know how to code.
-The application is non-opinionated so it can be easily reused for for many projects
+The application is non-opinionated so it can be easily reused for many projects
 
 ## How to use
 
