@@ -1,0 +1,1 @@
+Add here the final .ptau file and the r1cs for the circuit. These files are used to verify user uploads!
