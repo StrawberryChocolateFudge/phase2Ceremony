@@ -8,6 +8,16 @@ const debug = require('debug')('phase2Ceremony-service');
 const http = require('http');
 
 const { onConnect } = require("../src/websockets");
+const { detectFile, createLogIfNotExists } = require('../src/files');
+
+/**
+ * Check if the required files exist in the filesystem
+ */
+
+detectFile("ptau", (msg) => console.log(`Found required .ptau file: ${msg}`));
+detectFile("r1cs", (msg) => console.log(`Found required r1cs file : ${msg}`));
+detectFile("zkey", (msg) => console.log("Detected at least 1 zkey!"));
+createLogIfNotExists()
 
 /**
  * Get port from environment and store in Express.
@@ -30,7 +40,7 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, { maxHttpBufferSize: 1e8 });
 
 io.on("connection", (socket) => onConnect(io, socket))
 /**
