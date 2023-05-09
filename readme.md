@@ -61,7 +61,7 @@ Here is an example: withdraw_0001.zkey;
 So the scheme is the following {name}_{id}.zkey
 
 The name can be anything, the name of the circuit, the id is the number that is incremented so the first contribution is 0001 and second 0002 etc.
-The when saving, the ids will be padded to be 4 digits long.
+When saving, the ids will be padded to be 4 digits long.
 
 ## Deployment
 Run the application using PM2 on a VPS and install NGINX
