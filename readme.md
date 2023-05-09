@@ -4,6 +4,8 @@
 This project contains a front end and a server to conduct a phase 2 ceremony with random strangers who don't know how to code.
 The application is non-opinionated so it can be easily reused for many projects
 
+The contribution queue allows 25 simlutanious connections. Up to 25 contributors can connect at once. The contribution is synchronous so they need to wait for their turn. A turn takes around 20 seconds with a remote VPS. If a connection lasts for longer than 60 seconds the contribution is aborted and the queue continues from the next participant. This is to mitigate DOS where an attacker would block the queue.
+
 ## How to use
 
 Build the front end first.
@@ -14,7 +16,9 @@ Build the front end first.
 
 `npm run build`
 
-The front end uses a forked snarkjs that a added support for crypto polyfills, this was the workaround:
+If you rebuild the front end multiple times, you might want to delete the dist directory before your build.
+
+The front end uses a forked snarkjs that has added support for crypto-browserify polyfills, this was the workaround:
 
 https://github.com/StrawberryChocolateFudge/snarkjs/commit/2d8fd0cbee9f09a3838afb0bcf426b9ea32808c4
 
@@ -52,6 +56,7 @@ Here is an example: withdraw_0001.zkey;
 So the scheme is the following {name}_{id}.zkey
 
 The name can be anything, the name of the circuit, the id is the number that is incremented so the first contribution is 0001 and second 0002 etc.
+The when saving, the ids will be padded to be 4 digits long.
 
 ## Deployment
 Run the application using PM2 on a VPS and install NGINX
@@ -100,16 +105,20 @@ copy the nginxconfig sites-available
 then reload nginx
 `sudo systemctl reload nginx`
 ## Don't forget to copy 1 .ptau and 1 .r1cs file to /otherfiles and at least 1 .zkey to /zkeys
-Everything in the /zkeys directory is public!! only store .zkey files there otherwise there will be errors!!
+Everything in the /zkeys directory is public!! and only store .zkey files there otherwise there will be errors!!
 
-The log file will be created in the /otherfiles directory! It will be also served publicly.
+A csv log file will be created in the /otherfiles directory! It will be also served publicly at `/log`
 
-All the files copied to /public are also public!
+All the files copied to /public are also public! Thef ront end build will automaticly copy the dist directory here!
 
 ## Run the server
 
 `chmod a+x run.sh` 
 
 `./run.sh`
+
+PM2 should run only a single instance of the server because it uses the memory for queueing websocket connections!
+It could be scaled to cluster mode if a database layer is added with a locking mechanism to manage the queue, but for the current use-case that is not required.
+We don't need too many participants for a phase 2 ceremony so a single thread will do.
 
 
