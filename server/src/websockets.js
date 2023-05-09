@@ -1,4 +1,4 @@
-const { getLatest } = require("./files");
+const { getLatest, writeFile } = require("./files");
 const { addConnecton, removeConnection, getConnectionList, myPosition, getFirst, getProcessingCurrently, setProcessingCurrently } = require("./queue");
 
 function onConnect(io, socket) {
@@ -19,7 +19,19 @@ function onConnect(io, socket) {
         sendPositionToClients(io);
         processinQueue(io);
     });
-    // Add the client to the queue and broadcast an update on how many users are in the QUEQUE and what is your position
+
+    socket.on("upload", async (msg, callback) => {
+        const { oldFileName, name, data, contributionHash } = msg;
+        // Double check the socket id is the current one
+        const currentlyProcessing = getProcessingCurrently();
+        if (socket.id !== currentlyProcessing) {
+            callback({ message: "Contribution queueing failed. Wrong socket.", code: 1 });
+            return;
+        }
+
+        await writeFile(oldFileName, data, callback, name, contributionHash);
+    })
+
 }
 
 /*
@@ -51,6 +63,22 @@ function processinQueue(io) {
 
     setProcessingCurrently(firstInQueue);
     getLatest((filename) => io.to(firstInQueue).emit(messageRouter(MessageRoutes.startContribution, { filename })));
+
+    // I will disconnect a socket if it's processing for longer than 1 minute as it might be a malicious socket trying to block the queue
+    setTimeout(async () => {
+        const stillPricessing = getProcessingCurrently() === firstInQueue;
+               
+        if (stillPricessing) {
+            const sockets = await io.fetchSockets();
+            
+            for (let i in sockets){
+                const socket = sockets[i]; 
+                if(socket.id === firstInQueue){
+                    socket.disconnect();
+                }
+            }
+        }
+    }, 60000);
 }
 
 const MessageRoutes = {
