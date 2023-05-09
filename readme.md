@@ -92,10 +92,13 @@ Hosted on an Ubuntu or Debian VPS
 
 Clone this project from github
 
-Install the dependencies and run the server with pm2 from the snarky user.
+Install the dependencies,build the front end and run the server with pm2 from the snarky user.
 
-`npm install`
+copy the nginxconfig sites-available
+`cp /home/snarky/phase2Ceremony/nginxconfig /etc/nginx/sites-available/default `
 
+then reload nginx
+`sudo systemctl reload nginx`
 ## Don't forget to copy 1 .ptau and 1 .r1cs file to /otherfiles and at least 1 .zkey to /zkeys
 Everything in the /zkeys directory is public!! only store .zkey files there otherwise there will be errors!!
 
