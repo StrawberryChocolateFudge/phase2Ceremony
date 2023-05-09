@@ -17,7 +17,6 @@ export function connectToSocket(onSuccess, onError, routeMessages) {
 
     socket.on("connect", () => {
         onSuccess("Successfully Connected to the socket. You have been added to a queue!")
-        console.log(socket.id);
     });
 
     socket.onAny(async (jsonString) => {

@@ -79,7 +79,6 @@ async function writeFile(oldFileName, data, callback, contributorName, contribut
         const filePath = `${ZKEYSDIR}/${newFileName}`
 
         fs.open(filePath, "w", (err, fd) => {
-            console.log("new file descriptor: ", fd)
             // File should be missing
             fs.writeFile(filePath, data, (err) => {
                 if (err) {
@@ -111,7 +110,6 @@ function writeLog(type, contributorName, contributionHash, fileName) {
 
 function appendLogLine(path, type, contributorName, contributionHash, fileName) {
     fs.open(path, 'a', (err, fd) => {
-        console.log("log file descriptor:  ", fd)
 
         if (err) {
             console.error("Log file missing");
@@ -150,7 +148,6 @@ function createLogIfNotExists() {
             if (err) {
                 console.error("Cannot create log file")
             } else {
-                console.log("Log file Created!");
             }
 
             closeFd(fd);
