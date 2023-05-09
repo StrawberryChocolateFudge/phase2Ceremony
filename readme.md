@@ -1,9 +1,8 @@
 # Phase 2 Ceremony in the Browser
 
 
-This project contains a front end and  a server to conduct a phase 2 ceremony with random strangers on the internet.
+This project contains a front end and a server to conduct a phase 2 ceremony with random strangers who don't know how to code.
 
-WORK IN PROGRESS
 
 ## How to use
 
