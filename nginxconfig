@@ -2,6 +2,7 @@ server {
         #SSL only
         listen 443 ssl default_server;
         listen [::]:443 ssl default_server;
+        client_max_body_size 200M;
 
         ssl_certificate /etc/letsencrypt/live/snarkyceremonies.com/fullchain.pem; # managed by Certbot
         ssl_certificate_key /etc/letsencrypt/live/snarkyceremonies.com/privkey.pem; # managed by Certbot
