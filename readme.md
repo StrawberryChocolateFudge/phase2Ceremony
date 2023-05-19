@@ -23,24 +23,6 @@ Build the front end first.
 If you rebuild the front end multiple times, you might want to delete the dist directory before your build.
 If the first build fails, you need to create a `/public` directory in the server folder where the contents will be copied!
 
-The front end uses a forked snarkjs that has added support for crypto-browserify polyfills, this was the workaround:
-
-https://github.com/StrawberryChocolateFudge/snarkjs/commit/2d8fd0cbee9f09a3838afb0bcf426b9ea32808c4
-
-The main application uses these global variables for polyfill support
-
-```
-import * as cryptoBrowserify from "crypto-browserify";
-import buffer from "buffer/";
-
-//@ts-ignore
-window.cryptoBrowserify = cryptoBrowserify;
-
-//@ts-ignore
-window.Buffer = buffer.Buffer;
-
-```
-
 Now you need to set up the server
 
 `cd server`
