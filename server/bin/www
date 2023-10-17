@@ -40,7 +40,7 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-const io = require('socket.io')(server, { maxHttpBufferSize: 1e8 });
+const io = require('socket.io')(server, { maxHttpBufferSize: 1e10 });
 
 io.on("connection", (socket) => onConnect(io, socket))
 /**

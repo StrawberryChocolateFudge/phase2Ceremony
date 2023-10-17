@@ -1,1 +1,1 @@
-NODE_ENV=production pm2 start ./bin/www -i 1
+NODE_ENV=production DEBUG=*  pm2 start ./bin/www -i 1
