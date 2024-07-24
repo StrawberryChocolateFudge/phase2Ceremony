@@ -1,6 +1,6 @@
-#DEPRECATION NOTICE
+# DEPRECATION NOTICE
 This phase-2 ceremony server is no longer maintained. The project has been superseded by NiftyZK which contains this exact ceremony server and let's you host your own ceremony more easily!
-https://github.com/NiftyZk/niftyzk/blob/master/readme.md
+https://github.com/NiftyZk/niftyzk
 
 # Non-opinionated Phase 2 Ceremonies in the Browser
 
